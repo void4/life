@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/perlin-network/life/exec"
+	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/platform"
 	"io/ioutil"
 	"strconv"
@@ -80,7 +81,11 @@ func main() {
 		DefaultMemoryPages:   128,
 		DefaultTableSize:     65536,
 		DisableFloatingPoint: *noFloatingPointFlag,
-	}, new(Resolver), nil)
+		ReturnOnGasLimitExceeded: false,
+		GasLimit: 1000000,
+	}, new(Resolver), &compiler.SimpleGasPolicy{
+		GasPerInstruction: 1,
+	})
 
 	if err != nil {
 		panic(err)
@@ -137,4 +142,5 @@ func main() {
 	end := time.Now()
 
 	fmt.Printf("return value = %d, duration = %v\n", ret, end.Sub(start))
+	fmt.Printf("Gas used = %d\tGas limit = %d\n", vm.Gas, vm.Config.GasLimit)
 }
