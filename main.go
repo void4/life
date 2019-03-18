@@ -68,6 +68,7 @@ func main() {
 	entryFunctionFlag := flag.String("entry", "app_main", "entry function name")
 	pmFlag := flag.Bool("polymerase", false, "enable the Polymerase engine")
 	noFloatingPointFlag := flag.Bool("no-fp", false, "disable floating point")
+	gasLimitFlag := flag.Int("gaslimit", -1, "set gas limit")
 	flag.Parse()
 
 	// Read WebAssembly *.wasm file.
@@ -81,8 +82,8 @@ func main() {
 		DefaultMemoryPages:   128,
 		DefaultTableSize:     65536,
 		DisableFloatingPoint: *noFloatingPointFlag,
-		ReturnOnGasLimitExceeded: false,
-		GasLimit: 1000000,
+		ReturnOnGasLimitExceeded: *gasLimitFlag < 0,
+		GasLimit: uint64(*gasLimitFlag),
 	}, new(Resolver), &compiler.SimpleGasPolicy{
 		GasPerInstruction: 1,
 	})
